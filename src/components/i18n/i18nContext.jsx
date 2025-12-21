@@ -7,23 +7,18 @@ const detectBrowserLanguage = () => {
   const browserLang = navigator.language || navigator.userLanguage;
   const langCode = browserLang.split('-')[0].toLowerCase();
   
-  // Check if detected language is supported
   if (['en', 'es', 'ca', 'fr', 'de', 'it', 'pt', 'ru', 'ja', 'zh'].includes(langCode)) {
     return langCode;
   }
-  
-  // Default fallback to Spanish
   return 'es';
 };
 
 export function I18nProvider({ children }) {
   const [language, setLanguage] = useState(() => {
-    // Check localStorage first
     const saved = localStorage.getItem('impostor-language');
     if (saved && ['en', 'es', 'ca', 'fr', 'de', 'it', 'pt', 'ru', 'ja', 'zh'].includes(saved)) {
       return saved;
     }
-    // Auto-detect from browser
     return detectBrowserLanguage();
   });
 
@@ -33,6 +28,32 @@ export function I18nProvider({ children }) {
   }, [language]);
 
   const t = (key, options = {}) => {
+    // *** PARXE PER A LES PARAULES PERSONALITZADES ***
+    // Afegim aquí les traduccions que falten perquè no hagis de tocar el fitxer extern
+    const missingKeys = {
+      customWordsTitle: {
+        en: "Play with your own words",
+        es: "Juega con tus propias palabras",
+        ca: "Juga amb les teves paraules"
+      },
+      customWordsPlaceholder: {
+        en: "Enter words separated by commas (e.g. Car, Dog)",
+        es: "Introduce palabras separadas por comas (ej. Coche, Perro)",
+        ca: "Entra aquí les paraules separades per comes (exemple: Casa, Gos)"
+      },
+      customWordsHelp: {
+        en: "If you don't enter any words, the game will choose one randomly.",
+        es: "Si no introduces ninguna palabra, el juego elegirá una aleatoriamente.",
+        ca: "Si no entres cap paraula, el joc n'escollirà una aleatòriament."
+      }
+    };
+
+    // Si la clau és una de les noves, retornem directament la traducció d'aquí
+    if (missingKeys[key]) {
+      return missingKeys[key][language] || missingKeys[key]['en'];
+    }
+    // *** FI DEL PARXE ***
+
     const keys = key.split('.');
     let value = translations[language]?.translation;
     
@@ -41,7 +62,6 @@ export function I18nProvider({ children }) {
     }
     
     if (!value) {
-      // Fallback to English
       value = translations['en']?.translation;
       for (const k of keys) {
         value = value?.[k];
@@ -50,7 +70,6 @@ export function I18nProvider({ children }) {
     
     if (!value) return key;
     
-    // Handle interpolation like {{number}}
     let result = value;
     Object.entries(options).forEach(([optKey, optValue]) => {
       result = result.replace(new RegExp(`{{${optKey}}}`, 'g'), optValue);
@@ -71,6 +90,9 @@ export function I18nProvider({ children }) {
     </I18nContext.Provider>
   );
 }
+
+// També afegim això per compatibilitat amb Setup.jsx si ho necessita
+export const I18nProviderAlias = I18nProvider; 
 
 export const useTranslation = () => {
   const context = useContext(I18nContext);
