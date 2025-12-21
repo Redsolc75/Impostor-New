@@ -153,21 +153,21 @@ function SetupContent() {
               </div>
             </motion.div>
 
-            {/* Custom words section */}
+            {/* Custom words section - AQUÍ ESTÀ EL CANVI */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
               className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 space-y-4"
             >
-              <h3 className="text-white font-medium">Juga amb les teves paraules</h3>
+              <h3 className="text-white font-medium">{t('customWordsTitle')}</h3>
               <Input
-                placeholder="Entra aquí les paraules separades per comes (exemple: Casa, Pizza, Futbol...)"
+                placeholder={t('customWordsPlaceholder')}
                 value={customWords}
                 onChange={(e) => setCustomWords(e.target.value)}
                 className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-cyan-500/50 focus:ring-cyan-500/20 h-12 rounded-xl"
               />
-              <p className="text-white/50 text-sm">Si no entres cap paraula, el joc n'escollirà una aleatòriament.</p>
+              <p className="text-white/50 text-sm">{t('customWordsHelp')}</p>
             </motion.div>
 
             {/* Player names */}
