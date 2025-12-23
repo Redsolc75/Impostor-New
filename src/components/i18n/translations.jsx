@@ -533,14 +533,114 @@ export const translations = {
 
 // Fallback words if database is empty
 export const fallbackWords = {
-  en: ["Pizza", "Guitar", "Beach", "Robot", "Castle", "Dragon", "Sunflower", "Volcano", "Telescope", "Dinosaur"],
-  es: ["Pizza", "Guitarra", "Playa", "Robot", "Castillo", "Dragón", "Girasol", "Volcán", "Telescopio", "Dinosaurio"],
-  ca: ["Pizza", "Guitarra", "Platja", "Robot", "Castell", "Drac", "Gira-sol", "Volcà", "Telescopi", "Dinosaure"],
-  fr: ["Tour Eiffel", "Croissant", "Vélo", "Parfum", "Champagne", "Métro", "Baguette", "Louvre", "Fromage", "Bordeaux"],
-  de: ["Oktoberfest", "Autobahn", "Brezel", "Berlin", "Schloss", "Biergarten", "Schwarzwald", "Bratwurst", "Volkswagen", "Alpen"],
-  it: ["Colosseo", "Pizza", "Vespa", "Gondola", "Espresso", "Gelato", "Venezia", "Ferrari", "Opera", "Pasta"],
-  pt: ["Fado", "Praia", "Bacalhau", "Lisboa", "Futebol", "Azulejos", "Pastel", "Porto", "Samba", "Capoeira"],
-  ru: ["Кремль", "Балалайка", "Матрешка", "Водка", "Самовар", "Борщ", "Тройка", "Спутник", "Тундра", "Балет"],
-  ja: ["寿司", "富士山", "桜", "侍", "東京", "カラオケ", "相撲", "忍者", "ラーメン", "漫画"],
-  zh: ["长城", "熊猫", "茶", "饺子", "京剧", "太极", "龙", "北京", "功夫", "春节"]
+  en: [
+    "Hospital", "School", "Beach", "Airport", "Restaurant", "Library", "Cinema", "Museum", "Park", "Gym",
+    "Supermarket", "Hotel", "Bank", "Stadium", "Circus", "Zoo", "Casino", "Prison", "Factory", "Castle",
+    "Doctor", "Teacher", "Police", "Chef", "Artist", "Pilot", "Firefighter", "Scientist", "Actor", "Farmer",
+    "Computer", "Phone", "Hammer", "Scissors", "Pencil", "Glasses", "Watch", "Umbrella", "Key", "Wallet",
+    "Pizza", "Burger", "Apple", "Bread", "Cheese", "Chocolate", "Coffee", "Ice Cream", "Sushi", "Pasta",
+    "Dog", "Cat", "Lion", "Elephant", "Shark", "Eagle", "Snake", "Spider", "Whale", "Penguin",
+    "Car", "Bicycle", "Train", "Airplane", "Boat", "Bus", "Motorcycle", "Helicopter", "Rocket", "Taxi",
+    "Sun", "Moon", "Rain", "Snow", "Tree", "Flower", "Mountain", "River", "Fire", "Star",
+    "Bed", "Chair", "Table", "Lamp", "Mirror", "Sofa", "Door", "Window", "Fridge", "Clock"
+  ],
+  es: [
+    "Hospital", "Escuela", "Playa", "Aeropuerto", "Restaurante", "Biblioteca", "Cine", "Museo", "Parque", "Gimnasio",
+    "Supermercado", "Hotel", "Banco", "Estadio", "Circo", "Zoológico", "Casino", "Prisión", "Fábrica", "Castillo",
+    "Médico", "Profesor", "Policía", "Cocinero", "Artista", "Piloto", "Bombero", "Científico", "Actor", "Granjero",
+    "Ordenador", "Teléfono", "Martillo", "Tijeras", "Lápiz", "Gafas", "Reloj", "Paraguas", "Llave", "Cartera",
+    "Pizza", "Hamburguesa", "Manzana", "Pan", "Queso", "Chocolate", "Café", "Helado", "Sushi", "Pasta",
+    "Perro", "Gato", "León", "Elefante", "Tiburón", "Águila", "Serpiente", "Araña", "Ballena", "Pingüino",
+    "Coche", "Bicicleta", "Tren", "Avión", "Barco", "Autobús", "Moto", "Helicóptero", "Cohete", "Taxi",
+    "Sol", "Luna", "Lluvia", "Nieve", "Árbol", "Flor", "Montaña", "Río", "Fuego", "Estrella",
+    "Cama", "Silla", "Mesa", "Lámpara", "Espejo", "Sofá", "Puerta", "Ventana", "Nevera", "Reloj de pared"
+  ],
+  ca: [
+    "Hospital", "Escola", "Platja", "Aeroport", "Restaurant", "Biblioteca", "Cinema", "Museu", "Parc", "Gimnàs",
+    "Supermercat", "Hotel", "Banc", "Estadi", "Circ", "Zoo", "Casino", "Presó", "Fàbrica", "Castell",
+    "Metge", "Mestre", "Policia", "Cuiner", "Artista", "Pilot", "Bomber", "Científic", "Actor", "Pagès",
+    "Ordinador", "Telèfon", "Martell", "Tisores", "Llapis", "Ulleres", "Rellotge", "Paraigua", "Clau", "Cartera",
+    "Pizza", "Hamburguesa", "Poma", "Pa", "Formatge", "Xocolata", "Cafè", "Gelat", "Sushi", "Pasta",
+    "Gos", "Gat", "Lleó", "Elefant", "Tauró", "Àguila", "Serp", "Aranya", "Balena", "Pingüí",
+    "Cotxe", "Bicicleta", "Tren", "Avió", "Vaixell", "Bus", "Moto", "Helicòpter", "Coet", "Taxi",
+    "Sol", "Lluna", "Pluja", "Neu", "Arbre", "Flor", "Muntanya", "Riu", "Foc", "Estrella",
+    "Llit", "Cadira", "Taula", "Làmpada", "Mirall", "Sofà", "Porta", "Finestra", "Nevera", "Rellotge de paret"
+  ],
+  fr: [
+    "Hôpital", "École", "Plage", "Aéroport", "Restaurant", "Bibliothèque", "Cinéma", "Musée", "Parc", "Gymnase",
+    "Supermarché", "Hôtel", "Banque", "Stade", "Cirque", "Zoo", "Casino", "Prison", "Usine", "Château",
+    "Médecin", "Professeur", "Police", "Cuisinier", "Artiste", "Pilote", "Pompier", "Scientifique", "Acteur", "Fermier",
+    "Ordinateur", "Téléphone", "Marteau", "Ciseaux", "Crayon", "Lunettes", "Montre", "Parapluie", "Clé", "Portefeuille",
+    "Pizza", "Burger", "Pomme", "Pain", "Fromage", "Chocolat", "Café", "Glace", "Sushi", "Pâtes",
+    "Chien", "Chat", "Lion", "Éléphant", "Requin", "Aigle", "Serpent", "Araignée", "Baleine", "Pingouin",
+    "Voiture", "Vélo", "Train", "Avion", "Bateau", "Bus", "Moto", "Hélicoptère", "Fusée", "Taxi",
+    "Soleil", "Lune", "Pluie", "Neige", "Arbre", "Fleur", "Montagne", "Rivière", "Feu", "Étoile",
+    "Lit", "Chaise", "Table", "Lampe", "Miroir", "Canapé", "Porte", "Fenêtre", "Frigo", "Horloge"
+  ],
+  de: [
+    "Krankenhaus", "Schule", "Strand", "Flughafen", "Restaurant", "Bibliothek", "Kino", "Museum", "Park", "Fitnessstudio",
+    "Supermarkt", "Hotel", "Bank", "Stadion", "Zirkus", "Zoo", "Casino", "Gefängnis", "Fabrik", "Schloss",
+    "Arzt", "Lehrer", "Polizei", "Koch", "Künstler", "Pilot", "Feuerwehrmann", "Wissenschaftler", "Schauspieler", "Bauer",
+    "Computer", "Telefon", "Hammer", "Schere", "Bleistift", "Brille", "Armbanduhr", "Regenschirm", "Schlüssel", "Brieftasche",
+    "Pizza", "Burger", "Apfel", "Brot", "Käse", "Schokolade", "Kaffee", "Eis", "Sushi", "Pasta",
+    "Hund", "Katze", "Löwe", "Elefant", "Hai", "Adler", "Schlange", "Spinne", "Wal", "Pinguin",
+    "Auto", "Fahrrad", "Zug", "Flugzeug", "Boot", "Bus", "Motorrad", "Hubschrauber", "Rakete", "Taxi",
+    "Sonne", "Mond", "Regen", "Schnee", "Baum", "Blume", "Berg", "Fluss", "Feuer", "Stern",
+    "Bett", "Stuhl", "Tisch", "Lampe", "Spiegel", "Sofa", "Tür", "Fenster", "Kühlschrank", "Uhr"
+  ],
+  it: [
+    "Ospedale", "Scuola", "Spiaggia", "Aeroporto", "Ristorante", "Biblioteca", "Cinema", "Museo", "Parco", "Palestra",
+    "Supermercato", "Hotel", "Banca", "Stadio", "Circo", "Zoo", "Casinò", "Prigione", "Fabbrica", "Castello",
+    "Dottore", "Insegnante", "Polizia", "Cuoco", "Artista", "Pilota", "Pompiere", "Scienziato", "Attore", "Contadino",
+    "Computer", "Telefono", "Martello", "Forbici", "Matita", "Occhiali", "Orologio", "Ombrello", "Chiave", "Portafoglio",
+    "Pizza", "Hamburger", "Mela", "Pane", "Formaggio", "Cioccolato", "Caffè", "Gelato", "Sushi", "Pasta",
+    "Cane", "Gatto", "Leone", "Elefante", "Squalo", "Aquila", "Serpente", "Ragno", "Balena", "Pinguino",
+    "Auto", "Bicicletta", "Treno", "Aereo", "Barca", "Autobus", "Moto", "Elicottero", "Razzo", "Taxi",
+    "Sole", "Luna", "Pioggia", "Neve", "Albero", "Fiore", "Montagna", "Fiume", "Fuoco", "Stella",
+    "Letto", "Sedia", "Tavolo", "Lampada", "Specchio", "Divano", "Porta", "Finestra", "Frigorifero", "Orologio"
+  ],
+  pt: [
+    "Hospital", "Escola", "Praia", "Aeroporto", "Restaurante", "Biblioteca", "Cinema", "Museu", "Parque", "Ginásio",
+    "Supermercado", "Hotel", "Banco", "Estádio", "Circo", "Zoológico", "Casino", "Prisão", "Fábrica", "Castelo",
+    "Médico", "Professor", "Polícia", "Cozinheiro", "Artista", "Piloto", "Bombeiro", "Cientista", "Ator", "Agricultor",
+    "Computador", "Telefone", "Martelo", "Tesoura", "Lápis", "Óculos", "Relógio", "Guarda-chuva", "Chave", "Carteira",
+    "Pizza", "Hambúrguer", "Maçã", "Pão", "Queijo", "Chocolate", "Café", "Gelado", "Sushi", "Massa",
+    "Cão", "Gato", "Leão", "Elefante", "Tubarão", "Águia", "Cobra", "Aranha", "Baleia", "Pinguim",
+    "Carro", "Bicicleta", "Comboio", "Avião", "Barco", "Autocarro", "Moto", "Helicóptero", "Foguete", "Táxi",
+    "Sol", "Lua", "Chuva", "Neve", "Árvore", "Flor", "Montanha", "Rio", "Fogo", "Estrela",
+    "Cama", "Cadeira", "Mesa", "Lâmpada", "Espelho", "Sofá", "Porta", "Janela", "Frigorífico", "Relógio"
+  ],
+  ru: [
+    "Больница", "Школа", "Пляж", "Аэропорт", "Ресторан", "Библиотека", "Кинотеатр", "Музей", "Парк", "Спортзал",
+    "Супермаркет", "Отель", "Банк", "Стадион", "Цирк", "Зоопарк", "Казино", "Тюрьма", "Завод", "Замок",
+    "Врач", "Учитель", "Полиция", "Повар", "Художник", "Пилот", "Пожарный", "Ученый", "Актер", "Фермер",
+    "Компьютер", "Телефон", "Молоток", "Ножницы", "Карандаш", "Очки", "Часы", "Зонт", "Ключ", "Кошелек",
+    "Пицца", "Бургер", "Яблоко", "Хлеб", "Сыр", "Шоколад", "Кофе", "Мороженое", "Суши", "Паста",
+    "Собака", "Кошка", "Лев", "Слон", "Акула", "Орел", "Змея", "Паук", "Кит", "Пингвин",
+    "Машина", "Велосипед", "Поезд", "Самолет", "Лодка", "Автобус", "Мотоцикл", "Вертолет", "Ракета", "Такси",
+    "Солнце", "Луна", "Дождь", "Снег", "Дерево", "Цветок", "Гора", "Река", "Огонь", "Звезда",
+    "Кровать", "Стул", "Стол", "Лампа", "Зеркало", "Диван", "Дверь", "Окно", "Холодильник", "Часы"
+  ],
+  ja: [
+    "病院", "学校", "ビーチ", "空港", "レストラン", "図書館", "映画館", "博物館", "公園", "ジム",
+    "スーパー", "ホテル", "銀行", "スタジアム", "サーカス", "動物園", "カジノ", "刑務所", "工場", "城",
+    "医者", "先生", "警察", "シェフ", "芸術家", "パイロット", "消防士", "科学者", "俳優", "農家",
+    "コンピューター", "電話", "ハンマー", "はさみ", "鉛筆", "眼鏡", "時計", "傘", "鍵", "財布",
+    "ピザ", "ハンバーガー", "りんご", "パン", "チーズ", "チョコレート", "コーヒー", "アイスクリーム", "寿司", "パスタ",
+    "犬", "猫", "ライオン", "象", "サメ", "鷲", "蛇", "蜘蛛", "鯨", "ペンギン",
+    "車", "自転車", "電車", "飛行機", "船", "バス", "バイク", "ヘリコプター", "ロケット", "タクシー",
+    "太陽", "月", "雨", "雪", "木", "花", "山", "川", "火", "星",
+    "ベッド", "椅子", "テーブル", "ランプ", "鏡", "ソファ", "ドア", "窓", "冷蔵庫", "時計"
+  ],
+  zh: [
+    "医院", "学校", "海滩", "机场", "餐厅", "图书馆", "电影院", "博物馆", "公园", "健身房",
+    "超市", "酒店", "银行", "体育场", "马戏团", "动物园", "赌场", "监狱", "工厂", "城堡",
+    "医生", "老师", "警察", "厨师", "艺术家", "飞行员", "消防员", "科学家", "演员", "农民",
+    "电脑", "电话", "锤子", "剪刀", "铅笔", "眼镜", "手表", "雨伞", "钥匙", "钱包",
+    "披萨", "汉堡", "苹果", "面包", "奶酪", "巧克力", "咖啡", "冰淇淋", "寿司", "意大利面",
+    "狗", "猫", "狮子", "大象", "鲨鱼", "老鹰", "蛇", "蜘蛛", "鲸鱼", "企鹅",
+    "汽车", "自行车", "火车", "飞机", "船", "公交车", "摩托车", "直升机", "火箭", "出租车",
+    "太阳", "月亮", "雨", "雪", "树", "花", "山", "河", "火", "星星",
+    "床", "椅子", "桌子", "灯", "镜子", "沙发", "门", "窗户", "冰箱", "时钟"
+  ]
 };
