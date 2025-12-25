@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, RotateCcw, Home, MessageCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, RotateCcw, Home, MessageCircle, Loader2, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
@@ -23,7 +23,7 @@ function GameContent() {
   const [secretWord, setSecretWord] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   
-  // NEW: State to store the starting player's name
+  // Estat per guardar qui comença
   const [startingPlayer, setStartingPlayer] = useState(null);
 
   useEffect(() => {
@@ -33,7 +33,6 @@ function GameContent() {
   const initializeGame = async () => {
     setIsLoading(true);
     
-    // Get game setup from session storage
     const setupData = sessionStorage.getItem('gameSetup');
     if (!setupData) {
       navigate(createPageUrl('Setup'));
@@ -43,11 +42,9 @@ function GameContent() {
     const { players: gamePlayers, customWords } = JSON.parse(setupData);
     setPlayers(gamePlayers);
     
-    // Randomly select impostor
     const randomImpostor = Math.floor(Math.random() * gamePlayers.length);
     setImpostorIndex(randomImpostor);
     
-    // Use custom words if provided, otherwise fetch from database
     if (customWords && customWords.length > 0) {
       const randomWord = customWords[Math.floor(Math.random() * customWords.length)];
       setSecretWord(randomWord);
@@ -62,14 +59,12 @@ function GameContent() {
 
   const fetchRandomWord = async () => {
     try {
-      // Fetch words matching the current language
       const words = await base44.entities.GameWord.filter({ language });
       
       if (words && words.length > 0) {
         const randomWord = words[Math.floor(Math.random() * words.length)];
         setSecretWord(randomWord.word);
       } else {
-        // Use fallback words
         const fallback = fallbackWords[language] || fallbackWords.es;
         const randomFallback = fallback[Math.floor(Math.random() * fallback.length)];
         setSecretWord(randomFallback);
@@ -77,7 +72,6 @@ function GameContent() {
       }
     } catch (error) {
       console.error('Error fetching word:', error);
-      // Use fallback words
       const fallback = fallbackWords[language] || fallbackWords.es;
       const randomFallback = fallback[Math.floor(Math.random() * fallback.length)];
       setSecretWord(randomFallback);
@@ -93,28 +87,24 @@ function GameContent() {
   };
 
   const startDiscussion = () => {
-    // NEW LOGIC: Select a random starting player
+    // Triar un jugador aleatori per començar
     if (players.length > 0) {
       const randomIndex = Math.floor(Math.random() * players.length);
-      // Ensure we handle both object players (with .name) or string players
       const selectedPlayer = players[randomIndex];
       const playerName = selectedPlayer.name || selectedPlayer; 
       setStartingPlayer(playerName);
     }
-
     setGamePhase('discussion');
   };
 
   const handleRestart = async () => {
     setIsLoading(true);
     setCurrentPlayerIndex(0);
-    setStartingPlayer(null); // Reset starting player
+    setStartingPlayer(null);
     
-    // New random impostor
     const randomImpostor = Math.floor(Math.random() * players.length);
     setImpostorIndex(randomImpostor);
     
-    // Fetch new word
     await fetchRandomWord();
     
     setGamePhase('reveal');
@@ -141,7 +131,6 @@ function GameContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black relative overflow-hidden">
-      {/* Background effects */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           animate={{ scale: [1, 1.2, 1] }}
@@ -156,7 +145,6 @@ function GameContent() {
       </div>
 
       <div className="relative z-10 min-h-screen flex flex-col">
-        {/* Header */}
         <header className="p-6 flex items-center justify-between">
           <Link to={createPageUrl('Home')}>
             <motion.button
@@ -170,7 +158,6 @@ function GameContent() {
           <LanguageSwitcher />
         </header>
 
-        {/* Main content */}
         <main className="flex-1 p-6 pb-12">
           <div className="max-w-md mx-auto">
             <AnimatePresence mode="wait">
@@ -182,7 +169,6 @@ function GameContent() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
-                  {/* Progress indicator */}
                   <div className="flex justify-center gap-2 mb-8">
                     {players.map((_, index) => (
                       <motion.div
@@ -194,132 +180,4 @@ function GameContent() {
                           index < currentPlayerIndex 
                             ? 'bg-green-500' 
                             : index === currentPlayerIndex 
-                              ? 'bg-cyan-400 animate-pulse' 
-                              : 'bg-white/20'
-                        }`}
-                      />
-                    ))}
-                  </div>
-
-                  <PlayerReveal
-                    player={players[currentPlayerIndex]}
-                    isImpostor={currentPlayerIndex === impostorIndex}
-                    secretWord={secretWord}
-                    onComplete={handlePlayerRevealComplete}
-                  />
-
-                  {/* Ad placement during reveal */}
-                  <AdContainer position="bottom" size="mobile-banner" />
-                </motion.div>
-              )}
-
-              {/* All Revealed Phase */}
-              {gamePhase === 'allRevealed' && (
-                <motion.div
-                  key="allRevealed"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  className="text-center space-y-8 py-12"
-                >
-                  <motion.div
-                    animate={{ 
-                      boxShadow: ['0 0 40px rgba(34, 197, 94, 0.4)', '0 0 80px rgba(34, 197, 94, 0.2)', '0 0 40px rgba(34, 197, 94, 0.4)']
-                    }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur-xl border border-green-500/30 flex items-center justify-center"
-                  >
-                    <MessageCircle className="w-12 h-12 text-green-400" />
-                  </motion.div>
-
-                  <div>
-                    <h2 className="text-2xl font-bold text-white mb-2">{t('allRevealed')}</h2>
-                  </div>
-
-                  <motion.button
-                    whileHover={{ scale: 1.03, boxShadow: '0 0 40px rgba(34, 197, 94, 0.4)' }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={startDiscussion}
-                    className="group relative w-full py-5 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold text-xl overflow-hidden"
-                  >
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    />
-                    <span className="relative flex items-center justify-center gap-3">
-                      <MessageCircle className="w-6 h-6" />
-                      {t('startDiscussion')}
-                    </span>
-                  </motion.button>
-                </motion.div>
-              )}
-
-              {/* Discussion Phase */}
-              {gamePhase === 'discussion' && (
-                <motion.div
-                  key="discussion"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className="space-y-8"
-                >
-                  <div className="text-center">
-                    <h2 className="text-2xl font-bold text-white mb-2">{t('discussion')}</h2>
-                    
-                    {/* NEW: Display the starting player */}
-                    {startingPlayer && (
-                      <motion.div
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.2 }}
-                        className="mt-4"
-                      >
-                         <p className="inline-block px-6 py-2 rounded-full bg-yellow-500/20 border border-yellow-500/40 text-yellow-300 font-bold text-lg shadow-[0_0_15px_rgba(234,179,8,0.2)]">
-                           {t('playerStarts', { name: startingPlayer })}
-                         </p>
-                      </motion.div>
-                    )}
-                  </div>
-
-                  <Timer initialMinutes={5} onTimeUp={() => toast.info('Time\'s up!')} />
-
-                  <div className="flex gap-4 mt-8">
-                    <motion.button
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
-                      onClick={handleRestart}
-                      className="flex-1 py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-semibold text-lg flex items-center justify-center gap-2"
-                    >
-                      <RotateCcw className="w-5 h-5" />
-                      {t('restart')}
-                    </motion.button>
-
-                    <motion.button
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
-                      onClick={handleEndGame}
-                      className="flex-1 py-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10 text-white/80 font-semibold text-lg flex items-center justify-center gap-2 hover:bg-white/15 transition-all"
-                    >
-                      <Home className="w-5 h-5" />
-                      {t('endGame')}
-                    </motion.button>
-                  </div>
-
-                  {/* Ad placement during discussion */}
-                  <AdContainer position="bottom" size="mobile-banner" />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </main>
-      </div>
-    </div>
-  );
-}
-
-export default function Game() {
-  return (
-    <I18nProvider>
-      <GameContent />
-    </I18nProvider>
-  );
-}
+                              ? 'bg-cyan
