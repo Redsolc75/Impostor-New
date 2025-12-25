@@ -22,6 +22,9 @@ function GameContent() {
   const [impostorIndex, setImpostorIndex] = useState(null);
   const [secretWord, setSecretWord] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  
+  // NEW: State to store the starting player's name
+  const [startingPlayer, setStartingPlayer] = useState(null);
 
   useEffect(() => {
     initializeGame();
@@ -90,12 +93,22 @@ function GameContent() {
   };
 
   const startDiscussion = () => {
+    // NEW LOGIC: Select a random starting player
+    if (players.length > 0) {
+      const randomIndex = Math.floor(Math.random() * players.length);
+      // Ensure we handle both object players (with .name) or string players
+      const selectedPlayer = players[randomIndex];
+      const playerName = selectedPlayer.name || selectedPlayer; 
+      setStartingPlayer(playerName);
+    }
+
     setGamePhase('discussion');
   };
 
   const handleRestart = async () => {
     setIsLoading(true);
     setCurrentPlayerIndex(0);
+    setStartingPlayer(null); // Reset starting player
     
     // New random impostor
     const randomImpostor = Math.floor(Math.random() * players.length);
@@ -251,6 +264,20 @@ function GameContent() {
                 >
                   <div className="text-center">
                     <h2 className="text-2xl font-bold text-white mb-2">{t('discussion')}</h2>
+                    
+                    {/* NEW: Display the starting player */}
+                    {startingPlayer && (
+                      <motion.div
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                        className="mt-4"
+                      >
+                         <p className="inline-block px-6 py-2 rounded-full bg-yellow-500/20 border border-yellow-500/40 text-yellow-300 font-bold text-lg shadow-[0_0_15px_rgba(234,179,8,0.2)]">
+                           {t('playerStarts', { name: startingPlayer })}
+                         </p>
+                      </motion.div>
+                    )}
                   </div>
 
                   <Timer initialMinutes={5} onTimeUp={() => toast.info('Time\'s up!')} />
