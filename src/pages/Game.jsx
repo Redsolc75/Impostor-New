@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-// Afegeixo 'User' a les importacions d'icones
 import { ArrowLeft, RotateCcw, Home, MessageCircle, Loader2, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -20,11 +19,12 @@ function GameContent() {
   const [gamePhase, setGamePhase] = useState('loading'); // loading, reveal, discussion
   const [players, setPlayers] = useState([]);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
-  const [impostorIndex, setImpostorIndex] = useState(null);
+  
+  // Array per guardar els índexs de TOTS els impostors (1 o 2)
+  const [impostorIndices, setImpostorIndices] = useState([]);
+  
   const [secretWord, setSecretWord] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  
-  // State to store the starting player's name
   const [startingPlayer, setStartingPlayer] = useState(null);
 
   useEffect(() => {
@@ -40,11 +40,21 @@ function GameContent() {
       return;
     }
     
-    const { players: gamePlayers, customWords } = JSON.parse(setupData);
+    const { players: gamePlayers, customWords, impostorCount } = JSON.parse(setupData);
     setPlayers(gamePlayers);
     
-    const randomImpostor = Math.floor(Math.random() * gamePlayers.length);
-    setImpostorIndex(randomImpostor);
+    // --- LÒGICA PER A MÚLTIPLES IMPOSTORS ---
+    const count = impostorCount || 1;
+    const newImpostors = [];
+    
+    // Triem impostors únics fins a arribar al número desitjat
+    while(newImpostors.length < count && newImpostors.length < gamePlayers.length) {
+      const r = Math.floor(Math.random() * gamePlayers.length);
+      if(newImpostors.indexOf(r) === -1) newImpostors.push(r);
+    }
+    
+    setImpostorIndices(newImpostors);
+    // ----------------------------------------
     
     if (customWords && customWords.length > 0) {
       const randomWord = customWords[Math.floor(Math.random() * customWords.length)];
@@ -102,8 +112,16 @@ function GameContent() {
     setCurrentPlayerIndex(0);
     setStartingPlayer(null);
     
-    const randomImpostor = Math.floor(Math.random() * players.length);
-    setImpostorIndex(randomImpostor);
+    // Recuperem la configuració per saber quants impostors toquen
+    const setupData = JSON.parse(sessionStorage.getItem('gameSetup'));
+    const count = setupData?.impostorCount || 1;
+    
+    const newImpostors = [];
+    while(newImpostors.length < count) {
+        const r = Math.floor(Math.random() * players.length);
+        if(newImpostors.indexOf(r) === -1) newImpostors.push(r);
+    }
+    setImpostorIndices(newImpostors);
     
     await fetchRandomWord();
     
@@ -189,7 +207,8 @@ function GameContent() {
 
                   <PlayerReveal
                     player={players[currentPlayerIndex]}
-                    isImpostor={currentPlayerIndex === impostorIndex}
+                    // Comprovem si l'índex està dins la llista d'impostors
+                    isImpostor={impostorIndices.includes(currentPlayerIndex)}
                     secretWord={secretWord}
                     onComplete={handlePlayerRevealComplete}
                   />
@@ -250,7 +269,7 @@ function GameContent() {
                   <div className="text-center">
                     <h2 className="text-2xl font-bold text-white mb-2">{t('discussion')}</h2>
                     
-                    {/* NEW: Button with icon and same style as "Nova Ronda" */}
+                    {/* BOTÓ DE QUI COMENÇA - ESTIL NOVA RONDA */}
                     {startingPlayer && (
                       <motion.div
                         initial={{ scale: 0.8, opacity: 0 }}
@@ -259,12 +278,10 @@ function GameContent() {
                         className="mt-4"
                       >
                          <motion.button
-                           whileHover={{ scale: 1.03 }}
-                           // Utilitzem el mateix estil de gradient, forma i font que el botó "Nova Ronda"
-                           className="w-full max-w-md mx-auto py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-semibold text-lg flex items-center justify-center gap-2"
+                           whileHover={{ scale: 1.02 }}
+                           className="w-full max-w-md mx-auto py-5 rounded-2xl bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-bold text-xl flex items-center justify-center gap-3 shadow-lg shadow-purple-500/20"
                          >
-                           {/* Icona d'usuari */}
-                           <User className="w-5 h-5" />
+                           <User className="w-6 h-6 text-white" />
                            {t('playerStarts', { name: startingPlayer })}
                          </motion.button>
                       </motion.div>
