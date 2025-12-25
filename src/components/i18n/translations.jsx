@@ -21,6 +21,7 @@ export const translations = {
       nextPlayer: "Joueur Suivant",
       allRevealed: "Tous les joueurs ont vu leurs rôles!",
       startDiscussion: "Commencer la Discussion",
+      playerStarts: "{{name}} commence !",
       timeRemaining: "Temps Restant",
       discussion: "Phase de Discussion",
       restart: "Nouvelle Partie",
@@ -70,6 +71,7 @@ export const translations = {
       nextPlayer: "Nächster Spieler",
       allRevealed: "Alle Spieler haben ihre Rollen gesehen!",
       startDiscussion: "Diskussion Starten",
+      playerStarts: "{{name}} fängt an!",
       timeRemaining: "Verbleibende Zeit",
       discussion: "Diskussionsphase",
       restart: "Neue Runde",
@@ -119,6 +121,7 @@ export const translations = {
       nextPlayer: "Prossimo Giocatore",
       allRevealed: "Tutti i giocatori hanno visto i loro ruoli!",
       startDiscussion: "Inizia Discussione",
+      playerStarts: "Inizia {{name}}!",
       timeRemaining: "Tempo Rimanente",
       discussion: "Fase di Discussione",
       restart: "Nuovo Round",
@@ -168,6 +171,7 @@ export const translations = {
       nextPlayer: "Próximo Jogador",
       allRevealed: "Todos os jogadores viram seus papéis!",
       startDiscussion: "Iniciar Discussão",
+      playerStarts: "{{name}} começa!",
       timeRemaining: "Tempo Restante",
       discussion: "Fase de Discussão",
       restart: "Nova Rodada",
@@ -217,6 +221,7 @@ export const translations = {
       nextPlayer: "Следующий Игрок",
       allRevealed: "Все игроки увидели свои роли!",
       startDiscussion: "Начать Обсуждение",
+      playerStarts: "Начинает {{name}}!",
       timeRemaining: "Оставшееся Время",
       discussion: "Фаза Обсуждения",
       restart: "Новый Раунд",
@@ -266,6 +271,7 @@ export const translations = {
       nextPlayer: "次のプレイヤー",
       allRevealed: "全員が役割を確認しました！",
       startDiscussion: "議論開始",
+      playerStarts: "{{name}}が開始！",
       timeRemaining: "残り時間",
       discussion: "議論フェーズ",
       restart: "新しいラウンド",
@@ -315,6 +321,7 @@ export const translations = {
       nextPlayer: "下一位玩家",
       allRevealed: "所有玩家都看到了角色！",
       startDiscussion: "开始讨论",
+      playerStarts: "{{name}} 开始！",
       timeRemaining: "剩余时间",
       discussion: "讨论阶段",
       restart: "新回合",
@@ -369,6 +376,7 @@ export const translations = {
       nextPlayer: "Next Player",
       allRevealed: "All players have seen their roles!",
       startDiscussion: "Start Discussion",
+      playerStarts: "{{name}} starts!",
       
       // Timer
       timeRemaining: "Time Remaining",
@@ -431,6 +439,7 @@ export const translations = {
       nextPlayer: "Siguiente Jugador",
       allRevealed: "¡Todos los jugadores han visto sus roles!",
       startDiscussion: "Iniciar Discusión",
+      playerStarts: "¡Empieza {{name}}!",
       
       // Timer
       timeRemaining: "Tiempo Restante",
@@ -493,6 +502,7 @@ export const translations = {
       nextPlayer: "Següent Jugador",
       allRevealed: "Tots els jugadors han vist els seus rols!",
       startDiscussion: "Iniciar Discussió",
+      playerStarts: "Comença {{name}}!",
       
       // Timer
       timeRemaining: "Temps Restant",
