@@ -1,21 +1,28 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Users, ArrowLeft, Play, Minus, Plus } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Users, ArrowLeft, Play, Minus, Plus, UserPlus } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { I18nProvider, useTranslation } from '@/components/i18n/i18nContext';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import AdContainer from '@/components/AdContainer';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 
 function SetupContent() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [playerCount, setPlayerCount] = useState(4);
+  const [impostorCount, setImpostorCount] = useState(1);
   const [playerNames, setPlayerNames] = useState(Array(12).fill(''));
   const [customWords, setCustomWords] = useState('');
+
+  // Si baixem de 8 jugadors, forcem a 1 impostor automàticament
+  useEffect(() => {
+    if (playerCount < 8) {
+      setImpostorCount(1);
+    }
+  }, [playerCount]);
 
   const handlePlayerNameChange = (index, value) => {
     const newNames = [...playerNames];
@@ -33,10 +40,11 @@ function SetupContent() {
       ? customWords.split(',').map(w => w.trim()).filter(w => w.length > 0)
       : [];
     
-    // Store game setup in sessionStorage
+    // Guardem la configuració (inclosos els impostors)
     sessionStorage.setItem('gameSetup', JSON.stringify({
       players: names.map((name, i) => ({ id: i, name })),
       playerCount,
+      impostorCount,
       customWords: wordsArray
     }));
     
@@ -62,7 +70,6 @@ function SetupContent() {
       </div>
 
       <div className="relative z-10 min-h-screen flex flex-col pb-20">
-        {/* Header */}
         <header className="p-6 flex items-center justify-between">
           <Link to={createPageUrl('Home')}>
             <motion.button
@@ -77,15 +84,12 @@ function SetupContent() {
           <LanguageSwitcher />
         </header>
 
-        {/* Zone A: Top Banner Ad */}
         <div className="px-6">
           <AdContainer position="top" size="leaderboard" />
         </div>
 
-        {/* Main content */}
         <main className="flex-1 p-6 pb-12">
           <div className="max-w-md mx-auto space-y-8">
-            {/* Title */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -94,7 +98,7 @@ function SetupContent() {
               <h1 className="text-3xl font-bold text-white mb-2">{t('setupTitle')}</h1>
             </motion.div>
 
-            {/* Player count selector */}
+            {/* Selector de Jugadors */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -152,6 +156,50 @@ function SetupContent() {
                 <span>12</span>
               </div>
             </motion.div>
+
+            {/* Selector d'Impostors (Només visible si >= 8 jugadors) */}
+            <AnimatePresence>
+              {playerCount >= 8 && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                  animate={{ opacity: 1, height: 'auto', marginTop: 32 }}
+                  exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 space-y-4">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500/20 to-orange-500/20 flex items-center justify-center">
+                        <UserPlus className="w-5 h-5 text-red-400" />
+                      </div>
+                      <span className="text-white font-medium">{t('impostorConfig')}</span>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <button
+                        onClick={() => setImpostorCount(1)}
+                        className={`py-3 px-4 rounded-xl border transition-all ${
+                          impostorCount === 1 
+                            ? 'bg-cyan-500/20 border-cyan-500 text-white' 
+                            : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
+                        }`}
+                      >
+                        {t('oneImpostor')}
+                      </button>
+                      <button
+                        onClick={() => setImpostorCount(2)}
+                        className={`py-3 px-4 rounded-xl border transition-all ${
+                          impostorCount === 2
+                            ? 'bg-purple-500/20 border-purple-500 text-white' 
+                            : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
+                        }`}
+                      >
+                        {t('twoImpostors')}
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Custom words section */}
             <motion.div
