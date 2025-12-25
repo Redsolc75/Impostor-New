@@ -203,4 +203,95 @@ function SetupContent() {
 
             {/* Custom words section */}
             <motion.div
-              initial={{ opacity
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 space-y-4"
+            >
+              <h3 className="text-white font-medium">{t('customWordsTitle')}</h3>
+              <Input
+                placeholder={t('customWordsPlaceholder')}
+                value={customWords}
+                onChange={(e) => setCustomWords(e.target.value)}
+                className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-cyan-500/50 focus:ring-cyan-500/20 h-12 rounded-xl"
+              />
+              <p className="text-white/50 text-sm">{t('customWordsHelp')}</p>
+            </motion.div>
+
+            {/* Player names */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="space-y-4"
+            >
+              <h3 className="text-white/80 font-medium px-1">{t('playerNames')}</h3>
+              <div className="space-y-3 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
+                {Array.from({ length: playerCount }).map((_, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <Input
+                      placeholder={t('playerPlaceholder', { number: index + 1 })}
+                      value={playerNames[index]}
+                      onChange={(e) => handlePlayerNameChange(index, e.target.value)}
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-cyan-500/50 focus:ring-cyan-500/20 h-12 rounded-xl"
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Start button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <motion.button
+                whileHover={{ scale: 1.02, boxShadow: '0 0 40px rgba(0, 212, 255, 0.4)' }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleStartGame}
+                disabled={!canStart}
+                className="group relative w-full py-5 rounded-2xl bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-bold text-xl overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                />
+                <span className="relative flex items-center justify-center gap-3">
+                  <Play className="w-6 h-6" />
+                  {t('startGame')}
+                </span>
+              </motion.button>
+            </motion.div>
+          </div>
+        </main>
+      </div>
+
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: rgba(255,255,255,0.05);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255,255,255,0.2);
+          border-radius: 10px;
+        }
+      `}</style>
+    </div>
+  );
+}
+
+export default function Setup() {
+  return (
+    <I18nProvider>
+      <SetupContent />
+    </I18nProvider>
+  );
+}
