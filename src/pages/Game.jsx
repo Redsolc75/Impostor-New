@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, RotateCcw, Home, MessageCircle, Loader2, User } from 'lucide-react';
+import { ArrowLeft, RotateCcw, Home, MessageCircle, Loader2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
@@ -23,7 +23,7 @@ function GameContent() {
   const [secretWord, setSecretWord] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   
-  // State to store the starting player's name
+  // NEW: State to store the starting player's name
   const [startingPlayer, setStartingPlayer] = useState(null);
 
   useEffect(() => {
@@ -33,6 +33,7 @@ function GameContent() {
   const initializeGame = async () => {
     setIsLoading(true);
     
+    // Get game setup from session storage
     const setupData = sessionStorage.getItem('gameSetup');
     if (!setupData) {
       navigate(createPageUrl('Setup'));
@@ -42,9 +43,11 @@ function GameContent() {
     const { players: gamePlayers, customWords } = JSON.parse(setupData);
     setPlayers(gamePlayers);
     
+    // Randomly select impostor
     const randomImpostor = Math.floor(Math.random() * gamePlayers.length);
     setImpostorIndex(randomImpostor);
     
+    // Use custom words if provided, otherwise fetch from database
     if (customWords && customWords.length > 0) {
       const randomWord = customWords[Math.floor(Math.random() * customWords.length)];
       setSecretWord(randomWord);
@@ -59,12 +62,14 @@ function GameContent() {
 
   const fetchRandomWord = async () => {
     try {
+      // Fetch words matching the current language
       const words = await base44.entities.GameWord.filter({ language });
       
       if (words && words.length > 0) {
         const randomWord = words[Math.floor(Math.random() * words.length)];
         setSecretWord(randomWord.word);
       } else {
+        // Use fallback words
         const fallback = fallbackWords[language] || fallbackWords.es;
         const randomFallback = fallback[Math.floor(Math.random() * fallback.length)];
         setSecretWord(randomFallback);
@@ -72,6 +77,7 @@ function GameContent() {
       }
     } catch (error) {
       console.error('Error fetching word:', error);
+      // Use fallback words
       const fallback = fallbackWords[language] || fallbackWords.es;
       const randomFallback = fallback[Math.floor(Math.random() * fallback.length)];
       setSecretWord(randomFallback);
@@ -87,23 +93,28 @@ function GameContent() {
   };
 
   const startDiscussion = () => {
+    // NEW LOGIC: Select a random starting player
     if (players.length > 0) {
       const randomIndex = Math.floor(Math.random() * players.length);
+      // Ensure we handle both object players (with .name) or string players
       const selectedPlayer = players[randomIndex];
       const playerName = selectedPlayer.name || selectedPlayer; 
       setStartingPlayer(playerName);
     }
+
     setGamePhase('discussion');
   };
 
   const handleRestart = async () => {
     setIsLoading(true);
     setCurrentPlayerIndex(0);
-    setStartingPlayer(null);
+    setStartingPlayer(null); // Reset starting player
     
+    // New random impostor
     const randomImpostor = Math.floor(Math.random() * players.length);
     setImpostorIndex(randomImpostor);
     
+    // Fetch new word
     await fetchRandomWord();
     
     setGamePhase('reveal');
@@ -130,6 +141,7 @@ function GameContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black relative overflow-hidden">
+      {/* Background effects */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           animate={{ scale: [1, 1.2, 1] }}
@@ -144,6 +156,7 @@ function GameContent() {
       </div>
 
       <div className="relative z-10 min-h-screen flex flex-col">
+        {/* Header */}
         <header className="p-6 flex items-center justify-between">
           <Link to={createPageUrl('Home')}>
             <motion.button
@@ -157,6 +170,7 @@ function GameContent() {
           <LanguageSwitcher />
         </header>
 
+        {/* Main content */}
         <main className="flex-1 p-6 pb-12">
           <div className="max-w-md mx-auto">
             <AnimatePresence mode="wait">
@@ -168,6 +182,7 @@ function GameContent() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
+                  {/* Progress indicator */}
                   <div className="flex justify-center gap-2 mb-8">
                     {players.map((_, index) => (
                       <motion.div
@@ -193,6 +208,7 @@ function GameContent() {
                     onComplete={handlePlayerRevealComplete}
                   />
 
+                  {/* Ad placement during reveal */}
                   <AdContainer position="bottom" size="mobile-banner" />
                 </motion.div>
               )}
@@ -249,6 +265,7 @@ function GameContent() {
                   <div className="text-center">
                     <h2 className="text-2xl font-bold text-white mb-2">{t('discussion')}</h2>
                     
+                    {/* NEW: Display the starting player */}
                     {startingPlayer && (
                       <motion.div
                         initial={{ scale: 0.8, opacity: 0 }}
@@ -256,13 +273,9 @@ function GameContent() {
                         transition={{ delay: 0.2 }}
                         className="mt-4"
                       >
-                         <motion.button
-                           whileHover={{ scale: 1.03 }}
-                           className="w-full max-w-md mx-auto py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-semibold text-lg flex items-center justify-center gap-2"
-                         >
-                           <User className="w-5 h-5" />
+                         <p className="inline-block px-6 py-2 rounded-full bg-yellow-500/20 border border-yellow-500/40 text-yellow-300 font-bold text-lg shadow-[0_0_15px_rgba(234,179,8,0.2)]">
                            {t('playerStarts', { name: startingPlayer })}
-                         </motion.button>
+                         </p>
                       </motion.div>
                     )}
                   </div>
@@ -291,6 +304,7 @@ function GameContent() {
                     </motion.button>
                   </div>
 
+                  {/* Ad placement during discussion */}
                   <AdContainer position="bottom" size="mobile-banner" />
                 </motion.div>
               )}
