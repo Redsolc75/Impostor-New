@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+// Afegeixo 'User' a les importacions d'icones
 import { ArrowLeft, RotateCcw, Home, MessageCircle, Loader2, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -23,7 +24,7 @@ function GameContent() {
   const [secretWord, setSecretWord] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   
-  // Estat per guardar qui comença
+  // State to store the starting player's name
   const [startingPlayer, setStartingPlayer] = useState(null);
 
   useEffect(() => {
@@ -87,7 +88,6 @@ function GameContent() {
   };
 
   const startDiscussion = () => {
-    // Triar un jugador aleatori per començar
     if (players.length > 0) {
       const randomIndex = Math.floor(Math.random() * players.length);
       const selectedPlayer = players[randomIndex];
@@ -180,4 +180,136 @@ function GameContent() {
                           index < currentPlayerIndex 
                             ? 'bg-green-500' 
                             : index === currentPlayerIndex 
-                              ? 'bg-cyan
+                              ? 'bg-cyan-400 animate-pulse' 
+                              : 'bg-white/20'
+                        }`}
+                      />
+                    ))}
+                  </div>
+
+                  <PlayerReveal
+                    player={players[currentPlayerIndex]}
+                    isImpostor={currentPlayerIndex === impostorIndex}
+                    secretWord={secretWord}
+                    onComplete={handlePlayerRevealComplete}
+                  />
+
+                  <AdContainer position="bottom" size="mobile-banner" />
+                </motion.div>
+              )}
+
+              {/* All Revealed Phase */}
+              {gamePhase === 'allRevealed' && (
+                <motion.div
+                  key="allRevealed"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="text-center space-y-8 py-12"
+                >
+                  <motion.div
+                    animate={{ 
+                      boxShadow: ['0 0 40px rgba(34, 197, 94, 0.4)', '0 0 80px rgba(34, 197, 94, 0.2)', '0 0 40px rgba(34, 197, 94, 0.4)']
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur-xl border border-green-500/30 flex items-center justify-center"
+                  >
+                    <MessageCircle className="w-12 h-12 text-green-400" />
+                  </motion.div>
+
+                  <div>
+                    <h2 className="text-2xl font-bold text-white mb-2">{t('allRevealed')}</h2>
+                  </div>
+
+                  <motion.button
+                    whileHover={{ scale: 1.03, boxShadow: '0 0 40px rgba(34, 197, 94, 0.4)' }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={startDiscussion}
+                    className="group relative w-full py-5 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold text-xl overflow-hidden"
+                  >
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    />
+                    <span className="relative flex items-center justify-center gap-3">
+                      <MessageCircle className="w-6 h-6" />
+                      {t('startDiscussion')}
+                    </span>
+                  </motion.button>
+                </motion.div>
+              )}
+
+              {/* Discussion Phase */}
+              {gamePhase === 'discussion' && (
+                <motion.div
+                  key="discussion"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="space-y-8"
+                >
+                  <div className="text-center">
+                    <h2 className="text-2xl font-bold text-white mb-2">{t('discussion')}</h2>
+                    
+                    {/* NEW: Button with icon and same style as "Nova Ronda" */}
+                    {startingPlayer && (
+                      <motion.div
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                        className="mt-4"
+                      >
+                         <motion.button
+                           whileHover={{ scale: 1.03 }}
+                           // Utilitzem el mateix estil de gradient, forma i font que el botó "Nova Ronda"
+                           className="w-full max-w-md mx-auto py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-semibold text-lg flex items-center justify-center gap-2"
+                         >
+                           {/* Icona d'usuari */}
+                           <User className="w-5 h-5" />
+                           {t('playerStarts', { name: startingPlayer })}
+                         </motion.button>
+                      </motion.div>
+                    )}
+                  </div>
+
+                  <Timer initialMinutes={5} onTimeUp={() => toast.info('Time\'s up!')} />
+
+                  <div className="flex gap-4 mt-8">
+                    <motion.button
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={handleRestart}
+                      className="flex-1 py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-semibold text-lg flex items-center justify-center gap-2"
+                    >
+                      <RotateCcw className="w-5 h-5" />
+                      {t('restart')}
+                    </motion.button>
+
+                    <motion.button
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={handleEndGame}
+                      className="flex-1 py-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10 text-white/80 font-semibold text-lg flex items-center justify-center gap-2 hover:bg-white/15 transition-all"
+                    >
+                      <Home className="w-5 h-5" />
+                      {t('endGame')}
+                    </motion.button>
+                  </div>
+
+                  <AdContainer position="bottom" size="mobile-banner" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+}
+
+export default function Game() {
+  return (
+    <I18nProvider>
+      <GameContent />
+    </I18nProvider>
+  );
+}
