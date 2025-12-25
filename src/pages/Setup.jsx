@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-// AFEGIT: Importem icones noves (User, Users)
-import { Users, ArrowLeft, Play, Minus, Plus, User, UserX } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Users, ArrowLeft, Play, Minus, Plus } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { I18nProvider, useTranslation } from '@/components/i18n/i18nContext';
@@ -17,16 +16,6 @@ function SetupContent() {
   const [playerCount, setPlayerCount] = useState(4);
   const [playerNames, setPlayerNames] = useState(Array(12).fill(''));
   const [customWords, setCustomWords] = useState('');
-  
-  // NOU ESTAT: Per guardar quants impostors volen (1 o 2)
-  const [impostorCount, setImpostorCount] = useState(1);
-
-  // EFECTE: Si baixen de 8 jugadors, resetegem automàticament a 1 impostor
-  useEffect(() => {
-    if (playerCount < 8) {
-      setImpostorCount(1);
-    }
-  }, [playerCount]);
 
   const handlePlayerNameChange = (index, value) => {
     const newNames = [...playerNames];
@@ -48,8 +37,7 @@ function SetupContent() {
     sessionStorage.setItem('gameSetup', JSON.stringify({
       players: names.map((name, i) => ({ id: i, name })),
       playerCount,
-      customWords: wordsArray,
-      impostorCount: impostorCount // Guardem la elecció de l'usuari
+      customWords: wordsArray
     }));
     
     navigate(createPageUrl('Game'));
@@ -165,65 +153,6 @@ function SetupContent() {
               </div>
             </motion.div>
 
-            {/* SELECCIÓ D'IMPOSTORS (Només visible si >= 8 jugadors) */}
-            <AnimatePresence>
-              {playerCount >= 8 && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0, overflow: 'hidden' }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 space-y-4"
-                >
-                  <h3 className="text-white font-medium flex items-center gap-2">
-                    <UserX className="w-5 h-5 text-purple-400" />
-                    {t('impostorConfig') || "Configuració d'Impostors"}
-                  </h3>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    {/* Botó 1 Impostor */}
-                    <button
-                      onClick={() => setImpostorCount(1)}
-                      className={`relative p-4 rounded-xl border transition-all duration-300 ${
-                        impostorCount === 1 
-                          ? 'bg-cyan-500/20 border-cyan-500 text-white' 
-                          : 'bg-white/5 border-transparent text-white/50 hover:bg-white/10'
-                      }`}
-                    >
-                      <div className="flex flex-col items-center gap-2">
-                        <User className="w-6 h-6" />
-                        <span className="font-bold">{t('oneImpostor') || "1 Impostor"}</span>
-                      </div>
-                    </button>
-
-                    {/* Botó 2 Impostors */}
-                    <button
-                      onClick={() => setImpostorCount(2)}
-                      className={`relative p-4 rounded-xl border transition-all duration-300 ${
-                        impostorCount === 2 
-                          ? 'bg-purple-500/20 border-purple-500 text-white' 
-                          : 'bg-white/5 border-transparent text-white/50 hover:bg-white/10'
-                      }`}
-                    >
-                      <div className="flex flex-col items-center gap-2">
-                        <div className="flex">
-                           <User className="w-6 h-6 -mr-2" />
-                           <User className="w-6 h-6" />
-                        </div>
-                        <span className="font-bold">{t('twoImpostors') || "2 Impostors"}</span>
-                      </div>
-                      
-                      {/* Etiqueta 'Recomanat' si són molts jugadors */}
-                      {playerCount >= 10 && impostorCount === 2 && (
-                         <span className="absolute -top-2 -right-2 px-2 py-0.5 bg-purple-500 text-[10px] rounded-full font-bold">
-                           TOP
-                         </span>
-                      )}
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
             {/* Custom words section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -290,7 +219,6 @@ function SetupContent() {
                 </span>
               </motion.button>
             </motion.div>
-
           </div>
         </main>
       </div>
