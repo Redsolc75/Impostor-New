@@ -96,7 +96,6 @@ export default function PlayerReveal({ player, isImpostor, secretWord, onComplet
                   {t('youAreImpostor')}
                 </motion.h2>
 
-                {/* AQUÍ ESTÀ EL CANVI: Ara utilitza la traducció */}
                 <p className="text-white/60 text-sm px-4">
                   🎭 {t('impostorHint')}
                 </p>
