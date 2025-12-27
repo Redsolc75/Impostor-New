@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, RotateCcw, Home, MessageCircle, Loader2, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -16,16 +16,20 @@ function GameContent() {
   const { t, language } = useTranslation();
   const navigate = useNavigate();
   
-  const [gamePhase, setGamePhase] = useState('loading'); // loading, reveal, discussion
+  const [gamePhase, setGamePhase] = useState('loading');
   const [players, setPlayers] = useState([]);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
-  
-  // Array per guardar els índexs de TOTS els impostors (1 o 2)
   const [impostorIndices, setImpostorIndices] = useState([]);
-  
   const [secretWord, setSecretWord] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [startingPlayer, setStartingPlayer] = useState(null);
+
+  // Utilitzem useRef per tenir accés a l'estat més recent dins de funcions asíncrones
+  const impostorIndicesRef = useRef(impostorIndices);
+  
+  useEffect(() => {
+    impostorIndicesRef.current = impostorIndices;
+  }, [impostorIndices]);
 
   useEffect(() => {
     initializeGame();
@@ -34,6 +38,13 @@ function GameContent() {
   const initializeGame = async () => {
     setIsLoading(true);
     
+    // --- RESET INICIAL ---
+    // Quan venim del Setup, netegem l'historial i posem el comptador a 1
+    sessionStorage.removeItem('lastImpostorIndices');
+    sessionStorage.setItem('gamesPlayedCount', '1');
+    console.log("Iniciant sessió de joc. Partida 1.");
+    // ---------------------
+
     const setupData = sessionStorage.getItem('gameSetup');
     if (!setupData) {
       navigate(createPageUrl('Setup'));
@@ -43,18 +54,15 @@ function GameContent() {
     const { players: gamePlayers, customWords, impostorCount } = JSON.parse(setupData);
     setPlayers(gamePlayers);
     
-    // --- LÒGICA PER A MÚLTIPLES IMPOSTORS ---
+    // Selecció inicial (pur atzar, ja que és la primera ronda)
     const count = impostorCount || 1;
     const newImpostors = [];
-    
-    // Triem impostors únics fins a arribar al número desitjat
     while(newImpostors.length < count && newImpostors.length < gamePlayers.length) {
       const r = Math.floor(Math.random() * gamePlayers.length);
-      if(newImpostors.indexOf(r) === -1) newImpostors.push(r);
+      if(!newImpostors.includes(r)) newImpostors.push(r);
     }
     
     setImpostorIndices(newImpostors);
-    // ----------------------------------------
     
     if (customWords && customWords.length > 0) {
       const randomWord = customWords[Math.floor(Math.random() * customWords.length)];
@@ -107,22 +115,81 @@ function GameContent() {
     setGamePhase('discussion');
   };
 
+  // --- LÒGICA CENTRAL DE RESTART AMB LA REGLA DE 5 PARTIDES ---
   const handleRestart = async () => {
     setIsLoading(true);
+    
+    // 1. Guardem els impostors actuals abans de canviar res
+    const currentImpostors = impostorIndicesRef.current;
+    sessionStorage.setItem('lastImpostorIndices', JSON.stringify(currentImpostors));
+
+    // 2. GESTIÓ DEL COMPTADOR DE PARTIDES
+    let gamesPlayedCount = parseInt(sessionStorage.getItem('gamesPlayedCount') || '1');
+    gamesPlayedCount++; // Sumem una partida
+    sessionStorage.setItem('gamesPlayedCount', gamesPlayedCount.toString());
+
+    // 3. DECIDIM LA REGLA: Bloquegem si NO és la partida 5, 10, 15...
+    // Si el residu de dividir per 5 és 0, és una partida especial on es permet repetir.
+    const shouldBlockPreviousImpostor = gamesPlayedCount % 5 !== 0;
+
+    console.log(`Preparant partida ${gamesPlayedCount}. Bloquejar repetició? ${shouldBlockPreviousImpostor ? 'SÍ' : 'NO (Ronda especial!)'}`);
+
+    // Resetegem estats visuals
     setCurrentPlayerIndex(0);
     setStartingPlayer(null);
     
-    // Recuperem la configuració per saber quants impostors toquen
     const setupData = JSON.parse(sessionStorage.getItem('gameSetup'));
     const count = setupData?.impostorCount || 1;
-    
+
+    // Recuperem els impostors de la ronda anterior
+    let lastImpostorIndices = [];
+    try {
+        const lastData = sessionStorage.getItem('lastImpostorIndices');
+        lastImpostorIndices = lastData ? JSON.parse(lastData) : [];
+        if (!Array.isArray(lastImpostorIndices)) lastImpostorIndices = [];
+    } catch (e) { lastImpostorIndices = []; }
+
+    // SELECCIÓ DELS NOUS IMPOSTORS
     const newImpostors = [];
-    while(newImpostors.length < count) {
+    let attempts = 0;
+    
+    while(newImpostors.length < count && attempts < 200) {
+        attempts++;
         const r = Math.floor(Math.random() * players.length);
-        if(newImpostors.indexOf(r) === -1) newImpostors.push(r);
+
+        const jaEscollitAquestaRonda = newImpostors.includes(r);
+        const eraImpostorLaRondaPassada = lastImpostorIndices.includes(r);
+
+        // CONDICIÓ CLAU:
+        // 1. No pot estar ja escollit per aquesta mateixa ronda (sempre).
+        if (!jaEscollitAquestaRonda) {
+             // 2. Si HEM de bloquejar I era impostor, el saltem.
+             if (shouldBlockPreviousImpostor && eraImpostorLaRondaPassada) {
+                 continue; // Provem un altre número
+             }
+             // Si passem els filtres, l'afegim
+             newImpostors.push(r);
+        }
     }
+
+    // Fallback de seguretat (per si la configuració és impossible)
+    while(newImpostors.length < count) {
+         const r = Math.floor(Math.random() * players.length);
+         if(!newImpostors.includes(r)) newImpostors.push(r);
+    }
+    
     setImpostorIndices(newImpostors);
     
+    if (shouldBlockPreviousImpostor) {
+        console.log("Nous impostors (evitant anteriors):", newImpostors);
+    } else {
+        console.log("Nous impostors (ALEATORI PUR - Ronda especial 5a):", newImpostors);
+        // Opcional: Avisar si hi ha hagut repetició (pocs cops passarà)
+        if (newImpostors.some(i => lastImpostorIndices.includes(i))) {
+            // toast("Atenció: En aquesta ronda especial, un impostor HA REPETIT!", { duration: 4000 });
+        }
+    }
+
     await fetchRandomWord();
     
     setGamePhase('reveal');
@@ -130,7 +197,10 @@ function GameContent() {
   };
 
   const handleEndGame = () => {
+    // Netegem tot al sortir
     sessionStorage.removeItem('gameSetup');
+    sessionStorage.removeItem('lastImpostorIndices');
+    sessionStorage.removeItem('gamesPlayedCount'); 
     navigate(createPageUrl('Home'));
   };
 
@@ -207,7 +277,6 @@ function GameContent() {
 
                   <PlayerReveal
                     player={players[currentPlayerIndex]}
-                    // Comprovem si l'índex està dins la llista d'impostors
                     isImpostor={impostorIndices.includes(currentPlayerIndex)}
                     secretWord={secretWord}
                     onComplete={handlePlayerRevealComplete}
@@ -269,7 +338,7 @@ function GameContent() {
                   <div className="text-center">
                     <h2 className="text-2xl font-bold text-white mb-2">{t('discussion')}</h2>
                     
-                    {/* BOTÓ DE QUI COMENÇA - ESTIL NOVA RONDA */}
+                    {/* BOTÓ DE QUI COMENÇA */}
                     {startingPlayer && (
                       <motion.div
                         initial={{ scale: 0.8, opacity: 0 }}
