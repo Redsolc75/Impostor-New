@@ -14,7 +14,8 @@ function SetupContent() {
   const navigate = useNavigate();
   const [playerCount, setPlayerCount] = useState(4);
   const [impostorCount, setImpostorCount] = useState(1);
-  const [playerNames, setPlayerNames] = useState(Array(12).fill(''));
+  // CANVI 1: Preparem espai per a 14 noms en lloc de 12
+  const [playerNames, setPlayerNames] = useState(Array(14).fill(''));
   const [customWords, setCustomWords] = useState('');
 
   // Si baixem de 8 jugadors, forcem a 1 impostor automàticament
@@ -133,8 +134,9 @@ function SetupContent() {
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    onClick={() => setPlayerCount(Math.min(12, playerCount + 1))}
-                    disabled={playerCount >= 12}
+                    // CANVI 2: El botó '+' ara arriba fins a 14
+                    onClick={() => setPlayerCount(Math.min(14, playerCount + 1))}
+                    disabled={playerCount >= 14}
                     className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center disabled:opacity-30"
                   >
                     <Plus className="w-5 h-5 text-white" />
@@ -146,14 +148,16 @@ function SetupContent() {
                 value={[playerCount]}
                 onValueChange={(value) => setPlayerCount(value[0])}
                 min={3}
-                max={12}
+                // CANVI 3: El màxim de la barra és 14
+                max={14}
                 step={1}
                 className="w-full"
               />
               <div className="flex justify-between mt-2 text-white/40 text-sm">
                 <span>3</span>
                 <span>{playerCount} {t('players')}</span>
-                <span>12</span>
+                {/* CANVI 4: L'etiqueta visual mostra 14 */}
+                <span>14</span>
               </div>
             </motion.div>
 
